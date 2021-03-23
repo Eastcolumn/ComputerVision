@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.17)
+project( SIFT_Phase1 )
+set(OpenCV_DIR /usr/local/build_opencv)
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+add_executable( SIFT_Phase1 SIFT_Phase1.cpp )
+target_link_libraries( SIFT_Phase1 ${OpenCV_LIBS} )
