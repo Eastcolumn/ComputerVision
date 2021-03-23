@@ -5,16 +5,17 @@
 #include <opencv2/imgproc.hpp>
 #include <vector>
 
+// N, sigmaX and Y, Kernel size
 #define w 100
 #define sigma 5
 #define k 7
 
 struct ImageData {
-    cv::Mat origin;
+    cv::Mat origin;  // origin matrix of the images
     cv::Scalar color;
-    std::vector<cv::Mat> selected;
-    std::vector<cv::Mat> blured;
     std::string windowName;
+    std::vector<cv::Mat> selected;  // The corners that you choose
+    std::vector<cv::Mat> blured;    // Blured matrices of corner
 
     ImageData(cv::Mat _o, char *name, cv::Scalar _c) {
         origin = _o;
@@ -32,8 +33,14 @@ struct ImageData {
         selected.push_back(origin(cv::Rect(x, y, w, w)));
     }
 
+    // Gaussian filtering
     void gaussianBlur() {
         blured = std::vector<cv::Mat>(selected.size());
+        /*
+            use cv::GaussianBlur
+            k: kernel size
+            sigma: standard distribution of x and y
+        */
         for (int i = 0; i < selected.size(); ++i)
             cv::GaussianBlur(selected[i], blured[i], cv::Size(k, k), sigma, sigma);
     }
@@ -52,6 +59,10 @@ void callback(int event, int x, int y, int flags, void *userdata) {
 }
 
 int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        std::cout << "Invalid input parameters - Usage: " << argv[0] << " [source] [input]\n";
+        return -1;
+    }
     // read image
     ImageData source = ImageData(cv::imread(argv[1]), argv[1], cv::Scalar(0, 255, 255));
     ImageData input = ImageData(cv::imread(argv[2]), argv[2], cv::Scalar(255, 255, 0));
@@ -65,7 +76,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    // add mouse event to add a corner data
+    // add mouse event to add a corner data and draw rectangle
     cv::namedWindow(source.windowName);
     cv::setMouseCallback(source.windowName, callback, &source);
     cv::imshow(source.windowName, source.origin);
@@ -81,7 +92,6 @@ int main(int argc, char *argv[]) {
     // GaussianBlur
     source.gaussianBlur();
     input.gaussianBlur();
-
     auto blured1 = source.blured;
     auto blured2 = input.blured;
 
