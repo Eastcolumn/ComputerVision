@@ -14,8 +14,9 @@ void drawline(cv::Mat input, double points[8][2]);
 void sobel_part(cv::Mat input_part, double& gradient_m, double& gradient_dir);
 cv::Mat sobel(cv::Mat input);
 double similarlity(cv::Mat src1, cv::Mat src2);
-double points[8][2] = {0,};
+double points[8][2] = { 0, };
 double points_result[8][2] = { 0, };
+void histogram(cv::String name, std::vector<cv::Mat> sobel_blured);
 
 
 struct ImageData {
@@ -66,8 +67,8 @@ void callback_second(int event, int x, int y, int flags, void* userdata) {
     int size = (int)image->selected.size();
     if (event == cv::EVENT_LBUTTONDOWN && size < 4) {
         image->insertSubMat(x, y);
-        points[size+4][0] = x;
-        points[size+4][1] = y;
+        points[size + 4][0] = x;
+        points[size + 4][1] = y;
         cv::rectangle(image->origin, cv::Rect(x, y, w, w), cv::Scalar(0, 0, 255), 5);
         cv::putText(image->origin, std::string(1, size + '0'), cv::Point(x, y - 20),
             cv::FONT_HERSHEY_COMPLEX, 5, image->color, 3);
@@ -102,7 +103,7 @@ int main(int argc, char* argv[]) {
     cv::setMouseCallback(input.windowName, callback_second, &input);
     cv::imshow(input.windowName, input.origin);
 
-    
+
 
 
     // hold
@@ -110,12 +111,12 @@ int main(int argc, char* argv[]) {
     cv::destroyAllWindows();
 
 
-    for (int i=0; i < 2; i++) {
+    for (int i = 0; i < 2; i++) {
         for (int j = 0; j < 8; j++) {
             points_result[i][j] = points[i][j];
         }
     }
-    
+
 
     // GaussianBlur
     source.gaussianBlur();
@@ -123,7 +124,7 @@ int main(int argc, char* argv[]) {
 
     auto blured1 = source.blured;
     auto blured2 = input.blured;
-   
+
 
     // sobel + gradient
 
@@ -138,17 +139,13 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < 4; i++) {
         sobel_blured.push_back(sobel(blured1[i]));
         sobel_blured2.push_back(sobel(blured2[i]));
-        printf("wow %p", &sobel_blured[i]);
     }
-    for (int i = 0; i < sobel_blured.size(); i++) {
-        printf("\n 아 %d  번쨰 subMat 10도당 degree weight \n", i);
-        cv::print(sobel_blured[i]);
-        cv::print(sobel_blured2[i]);
-    }
+
+
 
 
     // calc similarlity
-    int similar_mat[4] = {0, 0, 0, 0};
+    int similar_mat[4] = { 0, 0, 0, 0 };
     double similar_rate[4] = { 0, 0, 0, 0 };
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -156,35 +153,36 @@ int main(int argc, char* argv[]) {
                 similar_rate[i] = similarlity(sobel_blured[i], sobel_blured2[j]);
             }
             else {
-            
                 if (similar_rate[i] > similarlity(sobel_blured[i], sobel_blured2[j])) {
                     similar_mat[i] = j;
                     similar_rate[i] = similarlity(sobel_blured[i], sobel_blured2[j]);
                 }
-            
             }
         }
-    
+
     }
     for (int i = 0; i < 4; i++) {
-        printf("\n\n\n  similarity is [ %d ] [ %f ] \n\n\n\n", similar_mat[i],similar_rate[i]);
 
         points_result[i + 4][0] = points[similar_mat[i] + 4][0];
         points_result[i + 4][1] = points[similar_mat[i] + 4][1];
 
     }
-    
+
+    histogram("1st", sobel_blured);
+    histogram("2nd", sobel_blured2);
+
+
     cv::Mat result;
     hconcat(source.origin, input.origin, result);
 
 
     drawline(result, points_result);
-       
+
     cv::imshow("hi", result);
     cv::waitKey(0);
-    
 
-   // i, left/right, x/y 
+
+    // i, left/right, x/y 
 
 
     return 0;
