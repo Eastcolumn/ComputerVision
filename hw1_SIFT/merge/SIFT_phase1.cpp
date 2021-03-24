@@ -16,8 +16,6 @@ cv::Mat sobel(cv::Mat input);
 double similarlity(cv::Mat src1, cv::Mat src2);
 double points[8][2] = {0,};
 double points_result[8][2] = { 0, };
-void cornerHarris_demo(int, void*);
-int cornerDetecter(cv::Mat& a);
 
 
 struct ImageData {
@@ -125,9 +123,7 @@ int main(int argc, char* argv[]) {
 
     auto blured1 = source.blured;
     auto blured2 = input.blured;
-
-    cornerDetecter(blured1[0]);
-    cornerDetecter(blured2[0]);
+   
 
     // sobel + gradient
 
