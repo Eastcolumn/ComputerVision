@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.17)
+project( hw2_Warping )
+set(OpenCV_DIR /usr/local/build_opencv)
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+add_executable( Warping main.cpp homography.cpp )
+target_link_libraries( hw_Warping ${OpenCV_LIBS} )
