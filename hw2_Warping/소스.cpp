@@ -30,13 +30,30 @@ Mat warping(Mat pseudo_inverse_H, int x_dst, int y_dst) {
 }
 
 
-Mat Mapping(Mat src,Mat dst,Mat dst_xy) {
+Mat Mapping(Mat H,Mat src,Mat dst,Mat dst_xy) {
 	//dst_xy  = 2x4 mat [{x1,y1}, {x2,y2} {x3,y3} {x4,y4}] 
 	// 1-2/ 2-3 /3-4 /4-1
 	
 	Mat output = dst.clone();
 	
+	for (int x = 0; x < dst.cols; x++) {
+		for (int y = 0; y < dst.rows; y++) {
+			
+			if (isInside(dst_xy,x,y) == true) {
+				
+				Mat xy_src = warping(H, x, y).clone();
+				output.at<Vec3b>(x, y) = output.at<Vec3b>((int)xy_src.at<float>(0, 0), (int)xy_src.at<float>(1, 0));
+			}
+		
+		
+		
+		
+		}
+
+
 	
+	
+	}
 	
 	/*
 	interpolation
@@ -47,7 +64,7 @@ Mat Mapping(Mat src,Mat dst,Mat dst_xy) {
 
 
 
-
+	return output;
 
 
 
@@ -61,17 +78,24 @@ bool isInside(Mat xy,int x,int y){
 		if (i != 3) {
 			float data[] = { xy.at<float>(i,0),xy.at<float>(i,1) ,xy.at<float>(i + 1,0) ,xy.at<float>(i + 1,1) ,(float)x,(float)y };
 			Mat x( 2 , 3, CV_32F, data);
-			line_position(x, i);
+			count = line_position(x, i);
 		}
 
 		else {
 		
 			float data[] = { xy.at<float>(i,0),xy.at<float>(i,1) ,xy.at<float>(0,0) ,xy.at<float>(0,1) ,(float)x,(float)y };
 			Mat x(2, 3, CV_32F, data);
-			line_position(x, i);
+			count = line_position(x, i);
 		
 		}
+
+		if (count == false) {
+			return false;
+
+		}
+
 	}
+	return count;
 }
 
 
