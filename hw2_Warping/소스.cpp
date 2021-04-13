@@ -10,7 +10,10 @@ using namespace cv;
 
 */
 
-
+bool isInside(Mat xy, int x, int y);
+Mat warping(Mat pseudo_inverse_H, int x_dst, int y_dst);
+Mat Mapping(Mat H, Mat src, Mat dst, Mat dst_xy);
+bool line_position(Mat xy, int i);
 
 Mat warping(Mat pseudo_inverse_H, int x_dst, int y_dst) {
 	
@@ -119,24 +122,24 @@ bool line_position(Mat xy,int i){
 	
 	*/
 
-	Mat AB(2, 1, CV_32F, { xy.at<int>(1, 0) - xy.at<int>(0, 0),xy.at<int>(1,1) - xy.at<int>(0,1) });
-	Mat AK(2, 1, CV_32F, { xy.at<int>(2, 0) - xy.at<int>(0, 0),xy.at<int>(2,1) - xy.at<int>(0,1) });
+	Mat AB(2, 1, CV_32F,( xy.at<int>(1, 0) - xy.at<int>(0, 0),xy.at<int>(1,1) - xy.at<int>(0,1) ));
+	Mat AK(2, 1, CV_32F, ( xy.at<int>(2, 0) - xy.at<int>(0, 0),xy.at<int>(2,1) - xy.at<int>(0,1) ));
 	
 
 	Mat AD;
 	if (i == 0) { // right is inside
-		Mat AD(2, 1, CV_32F, { xy.at<int>(0, 0) + 1,xy.at<int>(0,1) });	
+		Mat AD(2, 1, CV_32F, ( xy.at<int>(0, 0) + 1,xy.at<int>(0,1) ));	
 	}
 	else if (i == 1) { // up is inside
-		Mat AD(2, 1, CV_32F, { xy.at<int>(0, 0) ,xy.at<int>(0,1)+1 });
+		Mat AD(2, 1, CV_32F, ( xy.at<int>(0, 0) ,xy.at<int>(0,1)+1 ));
 
 	}
 	else if (i == 2) { // left is inside
-		Mat AD(2, 1, CV_32F, { xy.at<int>(0, 0) -1,xy.at<int>(0,1) });
+		Mat AD(2, 1, CV_32F, ( xy.at<int>(0, 0) -1,xy.at<int>(0,1) ));
 
 	}
 	else if (i == 3) { // down is inside
-		Mat AD(2, 1, CV_32F, { xy.at<int>(0, 0) ,xy.at<int>(0,1)-1 });
+		Mat AD(2, 1, CV_32F, ( xy.at<int>(0, 0) ,xy.at<int>(0,1)-1 ));
 
 	}
 	else {
