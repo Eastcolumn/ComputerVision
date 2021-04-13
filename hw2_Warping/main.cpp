@@ -32,7 +32,7 @@ void onMouse(int event, int x, int y, int flags, void *userdata) {
     }
 }
 
-void backword(Image& src, Image& dst, Mat& IH) {
+void backword(Image& src, Image& dst, Mat& H) {
 
     // ÁÂÇ¥ 4ºÎºÐ
 
@@ -68,7 +68,7 @@ void backword(Image& src, Image& dst, Mat& IH) {
         }
     }
 
-
+    Mat IH = H.inv();
 
     for (int c = min_x; c < max_x; c++) {
         for (int r = min_y; r < max_y; r++) {
@@ -88,6 +88,11 @@ void backword(Image& src, Image& dst, Mat& IH) {
                 X_src = 0;
             if (Y_src < 0)
                 Y_src = 0;
+            if (X_src > src.img.cols)
+                X_src = src.img.cols - 1;
+
+            if (Y_src > src.img.rows)
+                Y_src = src.img.cols - 1;
             dst.img.at<Vec3b>(r, c) = src.img.at<Vec3b>((int)Y_src, (int)X_src);
 
 
@@ -103,11 +108,6 @@ void backword(Image& src, Image& dst, Mat& IH) {
 
     // interpolation
 
-
-
-
-
-    //
 
 
 
@@ -135,8 +135,8 @@ int main(void) {
         for (int j = 0; j < 3; ++j) cout << H.at<float>(i, j) << " ";
         cout << "\n";
     }
-
-
+  
+    
     backword(img1, img2, H);
     imshow("dst", img2.img);
 
