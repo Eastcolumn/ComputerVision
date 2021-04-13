@@ -22,9 +22,9 @@ struct Image {
 
 
 
-void onMouse(int event, int x, int y, int flags, void *userdata) {
-    auto im = (Image *)userdata;
-    auto &pnts = im->pnts;
+void onMouse(int event, int x, int y, int flags, void* userdata) {
+    auto im = (Image*)userdata;
+    auto& pnts = im->pnts;
     if (event == EVENT_LBUTTONDOWN && pnts.size() < 4) {
         pnts.push_back(Point(x, y));
         rectangle(im->img, Rect(x - 10, y - 10, 20, 20), Scalar(255, 0, 0), 5);
@@ -93,9 +93,14 @@ void backword(Image& src, Image& dst, Mat& H) {
 
             if (Y_src > src.img.rows)
                 Y_src = src.img.cols - 1;
+
+            //기본적인 방법
             dst.img.at<Vec3b>(r, c) = src.img.at<Vec3b>((int)Y_src, (int)X_src);
-
-
+            // 2차 선형 보간법
+            Y2p = (Y_src - (int)Y_src) / 2;
+            X2p = (X_src - (int)X_src) / 2;
+            dst.img.at<Vec3b>(r, c) = (Y2p + X2p) / 2 * src.img.at<Vec3b>((int)Y_src + 1, (int)X_src + 1);
+            dst.img.at<Vec3b>(r, c) += 1 + (Y2p + X2p) / 2 * src.img.at<Vec3b>((int)Y_src, (int)X_src);
         }
 
     }
@@ -107,6 +112,9 @@ void backword(Image& src, Image& dst, Mat& H) {
 
 
     // interpolation
+
+
+
 
 
 
@@ -135,8 +143,8 @@ int main(void) {
         for (int j = 0; j < 3; ++j) cout << H.at<float>(i, j) << " ";
         cout << "\n";
     }
-  
-    
+
+
     backword(img1, img2, H);
     imshow("dst", img2.img);
 
