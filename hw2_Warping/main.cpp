@@ -1,9 +1,4 @@
-#include <iostream>
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include <string>
-#include <vector>
+#include "homography.h"
 
 using namespace std;
 using namespace cv;
@@ -20,7 +15,7 @@ struct Image {
     }
 
     bool empty() { return img.empty(); }
-}
+};
 
 void onMouse(int event, int x, int y, int flags, void *userdata) {
     auto im = (Image *)userdata;
@@ -43,15 +38,15 @@ int main(void) {
     imshow("src", img1.img);
     imshow("dst", img2.img);
 
+    waitKey(0);
+    destroyAllWindows();
+
     Mat H = homography(img1.pnts, img2.pnts);
 
     for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) cout << H[i][j] << " ";
-        cout << '\n';
+        for (int j = 0; j < 3; ++j) cout << H.at<float>(i, j) << " ";
+        cout << "\n";
     }
-
-    waitKey(0);
-    destroyAllWindows();
 
     return 0;
 }

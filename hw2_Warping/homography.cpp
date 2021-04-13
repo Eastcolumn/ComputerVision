@@ -1,10 +1,4 @@
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include <vector>
-
-using namespace std;
-using namespace cv;
+#include "homography.h"
 
 Mat homography(const vector<Point> &pnts1, const vector<Point> &pnts2) {
     if (pnts1.size() < 4 || pnts2.size() < 4) exit(-1);
@@ -17,7 +11,7 @@ Mat homography(const vector<Point> &pnts1, const vector<Point> &pnts2) {
     }
 
     Mat H =
-        (Mat<float>(8, 9) << -x[0], -y[0], -1, 0, 0, 0, x[0] * xp[0], y[0] * xp[0], xp[0], 0, 0, 0,
+        (Mat_<float>(8, 9) << -x[0], -y[0], -1, 0, 0, 0, x[0] * xp[0], y[0] * xp[0], xp[0], 0, 0, 0,
          -x[0], -y[0], -1, x[0] * yp[0], y[0] * yp[0], yp[0], -x[1], -y[1], -1, 0, 0, 0,
          x[1] * xp[1], y[1] * xp[1], xp[1], 0, 0, 0, -x[1], -y[1], -1, x[1] * yp[1], y[1] * yp[1],
          yp[1], -x[2], -y[2], -1, 0, 0, 0, x[2] * xp[2], y[2] * xp[2], xp[2], 0, 0, 0, -x[2], -y[2],
@@ -25,8 +19,8 @@ Mat homography(const vector<Point> &pnts1, const vector<Point> &pnts2) {
          y[3] * xp[3], xp[3], 0, 0, 0, -x[3], -y[3], -1, x[3] * yp[3], y[3] * yp[3], yp[3]);
 
     Mat U, S, VT;
-    SVDecomp(H, U, S, VT, SVD::FULL_VU);
-    traspose(VT, VT);
+    SVDecomp(H, U, S, VT, SVD::FULL_UV);
+    transpose(VT, VT);
 
     Mat col_vec = VT.col(8);
     col_vec = col_vec / col_vec.at<float>(8, 0);
